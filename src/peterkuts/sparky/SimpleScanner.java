@@ -13,9 +13,11 @@ class SimpleScanner implements ISparkyScanner {
 	}
 
 	public void init() {
-		modules.getRobot().setAdjustRadarForRobotTurn(true);
-		modules.getRobot().setAdjustRadarForGunTurn(true);
-		modules.getRobot().setTurnRadarRightRadians(Double.POSITIVE_INFINITY);
+		AdvancedRobot robot = modules.getRobot();
+		robot.setAdjustRadarForRobotTurn(true);
+		robot.setAdjustRadarForGunTurn(true);
+		robot.setTurnRadarRightRadians(Double.POSITIVE_INFINITY);
+		robot.scan();
 	}
 
 	public Enemy getLastTrackedEnemy() {
@@ -35,6 +37,7 @@ class SimpleScanner implements ISparkyScanner {
 
 		Enemy enemy = modules.getBlackboard().createEnemyWithName(event.getName());
 		enemy.makeStamp(robot, event);
+		lastTrackedEnemy = enemy;
 	}
 
 }

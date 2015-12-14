@@ -14,6 +14,7 @@ public class Sparky extends AdvancedRobot {
 
 	public void run() {
 		init();
+		execute();
 		do {
 			modules.run();
 			execute();
