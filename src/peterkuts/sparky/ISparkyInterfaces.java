@@ -3,6 +3,7 @@ package peterkuts.sparky;
 interface ISparkyModule {
 	void init();
 	void run();
+	void onPaint(java.awt.Graphics2D g);
 }
 
 interface ISparkyModuleHolder extends ISparkyModule {

@@ -1,10 +1,10 @@
 package peterkuts.sparky;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import robocode.AdvancedRobot;
 import robocode.ScannedRobotEvent;
+import robocode.util.Utils;
 
 class Enemy {
 	private String name;
@@ -35,16 +35,14 @@ class Enemy {
 			prevHeading = enemyRobot.getHeadingRadians();
 		}
 		double angle = robot.getHeadingRadians() + enemyRobot.getBearingRadians();
-		double posX = robot.getX() + enemyRobot.getDistance() * Math.sin(angle);
-		double posY = robot.getY() + enemyRobot.getDistance() * Math.cos(angle);
 		lastStamp = new EnemyStamp(
 				enemyRobot.getTime(),
 				enemyRobot.getEnergy(), 
-				posX,
-				posY,
+				robot.getX() + enemyRobot.getDistance() * Math.sin(angle),
+				robot.getY() + enemyRobot.getDistance() * Math.cos(angle),
 				enemyRobot.getHeadingRadians(), 
 				enemyRobot.getVelocity(), 
-				enemyRobot.getHeadingRadians()-prevHeading);
+				Utils.normalRelativeAngle(enemyRobot.getHeadingRadians()-prevHeading));
 		stamps.add(lastStamp);
 	}
 }

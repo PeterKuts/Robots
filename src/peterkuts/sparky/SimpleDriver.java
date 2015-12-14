@@ -2,10 +2,7 @@ package peterkuts.sparky;
 
 class SimpleDriver implements ISparkyDriver {
 
-	private ISparkyModuleHolder modules;
-	
 	public SimpleDriver(ISparkyModuleHolder modules) {
-		this.modules = modules;
 	}
 
 	@Override
@@ -14,6 +11,10 @@ class SimpleDriver implements ISparkyDriver {
 
 	@Override
 	public void run() {
+	}
+
+	@Override
+	public void onPaint(java.awt.Graphics2D g) {
 	}
 
 }

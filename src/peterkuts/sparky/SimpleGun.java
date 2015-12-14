@@ -1,7 +1,6 @@
 package peterkuts.sparky;
 
-import java.awt.geom.Point2D;
-import robocode.util.Utils;
+import robocode.*;
 
 class PredictionResult
 {
@@ -23,8 +22,9 @@ class SimpleGun implements ISparkyGun {
 	
 	@Override
 	public void init() {
+		modules.getRobot().setAdjustGunForRobotTurn(true);
 	}
-
+	
 	@Override
 	public void run() {
 //		if (getGunTurnRemainingRadians() == 0 && getGunHeat() == 0 && getOthers() > 0) {
@@ -34,6 +34,16 @@ class SimpleGun implements ISparkyGun {
 //		setTurnGunRightRadians(result.gunBearing);
 //	}
 	}
+
+	@Override
+	public void onPaint(java.awt.Graphics2D g) {
+		AdvancedRobot robot = modules.getRobot();
+		g.setColor(java.awt.Color.RED);
+		double destX = robot.getX() + Math.sin(robot.getGunHeadingRadians())*100;
+		double destY = robot.getY() + Math.cos(robot.getGunHeadingRadians())*100;
+		g.drawLine((int)robot.getX(), (int)robot.getY(), (int)destX, (int)destY);
+	}
+
 
 //	PredictionResult predict(EnemyStamp stamp) {
 //		double posX = getX();

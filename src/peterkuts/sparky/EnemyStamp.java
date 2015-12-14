@@ -1,7 +1,5 @@
 package peterkuts.sparky;
 
-import robocode.util.Utils;
-
 class EnemyStamp {
 	long time;
 	double energy;
@@ -25,7 +23,7 @@ class EnemyStamp {
 		this.positionY = positionY;
 		this.heading = heading;
 		this.velocity = velocity;
-		this.angular = Utils.normalRelativeAngle(angular);
+		this.angular = angular;
 	}
 	
 	public double distance(EnemyStamp stamp) {

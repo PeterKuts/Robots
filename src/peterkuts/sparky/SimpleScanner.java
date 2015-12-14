@@ -13,11 +13,17 @@ class SimpleScanner implements ISparkyScanner {
 	
 	@Override
 	public void init() {
+		modules.getRobot().setAdjustRadarForRobotTurn(true);
+		modules.getRobot().setAdjustRadarForGunTurn(true);
 		modules.getRobot().setTurnRadarRightRadians(Double.POSITIVE_INFINITY);
 	}
 
 	@Override
 	public void run() {
+	}
+	
+	@Override
+	public void onPaint(java.awt.Graphics2D g) {
 	}
 
 	@Override

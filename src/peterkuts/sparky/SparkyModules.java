@@ -35,6 +35,14 @@ class SparkyModules implements ISparkyModuleHolder {
 	}
 	
 	@Override
+	public void onPaint(java.awt.Graphics2D g) {
+		scanner.onPaint(g);
+		gun.onPaint(g);
+		driver.onPaint(g);
+		blackboard.onPaint(g);
+	}
+
+	@Override
 	public AdvancedRobot getRobot() {
 		return robot;
 	}
