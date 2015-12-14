@@ -10,15 +10,15 @@ class Enemy {
 	private String name;
 	private List<EnemyStamp> stamps;
 	private EnemyStamp lastStamp;
-	
+
 	public String getName() {
 		return name;
 	}
-	
+
 	public EnemyStamp getLastStamp() {
 		return lastStamp;
 	}
-	
+
 	public List<EnemyStamp> getStamps() {
 		return stamps;
 	}
@@ -26,7 +26,7 @@ class Enemy {
 	public Enemy(String name) {
 		stamps = new ArrayList<>();
 	}
-	
+
 	public void makeStamp(AdvancedRobot robot, ScannedRobotEvent enemyRobot) {
 		double prevHeading = 0;
 		if (lastStamp != null) {
@@ -35,14 +35,10 @@ class Enemy {
 			prevHeading = enemyRobot.getHeadingRadians();
 		}
 		double angle = robot.getHeadingRadians() + enemyRobot.getBearingRadians();
-		lastStamp = new EnemyStamp(
-				enemyRobot.getTime(),
-				enemyRobot.getEnergy(), 
+		lastStamp = new EnemyStamp(enemyRobot.getTime(), enemyRobot.getEnergy(),
 				robot.getX() + enemyRobot.getDistance() * Math.sin(angle),
-				robot.getY() + enemyRobot.getDistance() * Math.cos(angle),
-				enemyRobot.getHeadingRadians(), 
-				enemyRobot.getVelocity(), 
-				Utils.normalRelativeAngle(enemyRobot.getHeadingRadians()-prevHeading));
+				robot.getY() + enemyRobot.getDistance() * Math.cos(angle), enemyRobot.getHeadingRadians(),
+				enemyRobot.getVelocity(), Utils.normalRelativeAngle(enemyRobot.getHeadingRadians() - prevHeading));
 		stamps.add(lastStamp);
 	}
 }

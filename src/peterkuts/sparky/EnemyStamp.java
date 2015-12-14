@@ -8,14 +8,8 @@ class EnemyStamp {
 	double heading;
 	double velocity;
 	double angular;
-	
-	public EnemyStamp(
-			long time,
-			double energy,
-			double positionX, 
-			double positionY,
-			double heading,
-			double velocity,
+
+	public EnemyStamp(long time, double energy, double positionX, double positionY, double heading, double velocity,
 			double angular) {
 		this.time = time;
 		this.energy = energy;
@@ -25,11 +19,11 @@ class EnemyStamp {
 		this.velocity = velocity;
 		this.angular = angular;
 	}
-	
+
 	public double distance(EnemyStamp stamp) {
-		return Math.abs(velocity-stamp.velocity) + Math.abs(angular-stamp.angular);
+		return Math.abs(velocity - stamp.velocity) + Math.abs(angular - stamp.angular);
 	}
-	
+
 	public String description() {
 		return String.format("%d\t%f\t%f", time, velocity, angular);
 	}
