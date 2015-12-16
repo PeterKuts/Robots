@@ -21,6 +21,7 @@ interface ISparkyModuleHolder extends ISparkyModule {
 }
 
 interface ISparkyScanner extends ISparkyModule {
+	void onStatus(robocode.StatusEvent e);
 	void onScannedRobot(robocode.ScannedRobotEvent event);
 
 	Enemy getLastTrackedEnemy();

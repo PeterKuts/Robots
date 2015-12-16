@@ -8,13 +8,14 @@ public class Sparky extends AdvancedRobot {
 	private ISparkyModuleHolder modules;
 
 	void init() {
-		modules = new SparkyModules(this);
-		modules.init();
+		if (modules == null) {
+			modules = new SparkyModules(this);
+			modules.init();
+		}
 	}
 
 	public void run() {
 		init();
-		execute();
 		do {
 			modules.run();
 			execute();
@@ -23,6 +24,11 @@ public class Sparky extends AdvancedRobot {
 
 	public void onScannedRobot(ScannedRobotEvent event) {
 		modules.getScanner().onScannedRobot(event);
+	}
+	
+	public void onStatus(StatusEvent e) {
+		init();
+		modules.getScanner().onStatus(e);
 	}
 
 	public void onRoundEnded(RoundEndedEvent event) {
