@@ -1,6 +1,7 @@
 package peterkuts.sparky;
 
 import java.awt.geom.Point2D;
+import java.util.*;
 
 import robocode.*;
 import robocode.util.Utils;
@@ -11,12 +12,18 @@ class SimpleGun implements ISparkyGun {
 	}
 
 	class Prediction {
-		double posX;
-		double posY;
-		double heading;
+		Prediction(double bulletEnergy) {
+			this.bulletEnegry = bulletEnergy;
+			this.fire = false;
+		}
+		boolean fire;
 		double gunBearing;
 		double bulletEnegry;
 		double time;
+		
+		double objective() {
+            return this.fire?bulletEnegry:0;
+		}
 	}
 
 	private ISparkyModuleHolder modules;
@@ -106,18 +113,21 @@ class SimpleGun implements ISparkyGun {
 		double eH = stamp.heading;
 		double eV = stamp.velocity;
 		double eA = stamp.angular;
-		double time = 0;
-		double bulletEnergy = 3;
 		double w = 0;
 		double h = 0;
 		double W = robot.getBattleFieldWidth() - w;
 		double H = robot.getBattleFieldHeight() - h;
 
-		double angle = 0;
-		double rotationT = 0;
-		double bulletT = 0;
+		double time = 0;
+		double maxTime = 50;
+		
+		List<Prediction> predictions = new ArrayList<>();
+		predictions.add(new Prediction(1));
+		predictions.add(new Prediction(2));
+		predictions.add(new Prediction(3));
+		
 		boolean run = true;
-		while (run) {
+		do {
 			time++;
 			eX += eV * Math.sin(eH);
 			eY += eV * Math.cos(eH);
@@ -127,21 +137,32 @@ class SimpleGun implements ISparkyGun {
 				run = false;
 			}
 			eH += eA;
-			angle = Utils.normalRelativeAngle(Math.atan2(eX - posX, eY - posY) - gunRadians);
-			rotationT = Math.abs(angle) / Constants.getGunRotationSpeed();
-			bulletT = Point2D.distance(posX, posY, eX, eY) / Constants.getBulletSpeed(bulletEnergy);
-			run &= time < rotationT + bulletT;
-			run &= time < 50;
-		}
-		;
-		Prediction result = new Prediction();
-		result.posX = eX;
-		result.posY = eY;
-		result.heading = eH;
-		result.bulletEnegry = bulletEnergy;
-		result.time = time;
-		result.gunBearing = angle;
-		return result;
+			double angle = Utils.normalRelativeAngle(Math.atan2(eX - posX, eY - posY) - gunRadians);
+			double rotationT = Math.abs(angle) / Rules.GUN_TURN_RATE_RADIANS;
+			boolean allPredicitonsDone = true;
+			for (Prediction prediction: predictions) {
+				if (prediction.fire) {
+					continue;
+				}
+				double bulletT = Point2D.distance(posX, posY, eX, eY) 
+						/ Rules.getBulletSpeed(prediction.bulletEnegry);
+				double hitT = rotationT + bulletT;
+				prediction.gunBearing = angle;
+				prediction.time = hitT;
+				if (hitT <= time) {
+					prediction.fire = true;
+				} else {
+					allPredicitonsDone = false;
+				}
+			}
+			run &= !allPredicitonsDone && time < maxTime;
+		} while (run);
+		Optional<Prediction> max = predictions.stream().max(new Comparator<Prediction>() {
+			public int compare(Prediction o1, Prediction o2) {
+				return (int)Math.signum(o1.objective() - o2.objective());
+			}
+		});
+		return max.isPresent()? max.get(): null;
 	}
 
 	// public List<EnemyStamp> findEnemyPattern(int patternSize) {
