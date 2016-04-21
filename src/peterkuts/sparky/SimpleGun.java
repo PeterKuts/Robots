@@ -10,19 +10,27 @@ class SimpleGun implements ISparkyGun {
 	enum State {
 		Waiting, Aiming, Firing
 	}
+	
+	private Random rand = new Random(System.currentTimeMillis());
 
 	class Prediction {
 		Prediction(double bulletEnergy) {
 			this.bulletEnegry = bulletEnergy;
 			this.fire = false;
+			this.didHit = false;
+			this.obj = rand.nextDouble();
 		}
+		
 		boolean fire;
 		double gunBearing;
 		double bulletEnegry;
 		double time;
+		double bulletTime;
+		boolean didHit;
 		
+		double obj;
 		double objective() {
-            return this.fire?bulletEnegry:0;
+            return obj;//this.fire?bulletEnegry:0;
 		}
 	}
 
@@ -83,12 +91,17 @@ class SimpleGun implements ISparkyGun {
 		}
 	}
 
+	private HashMap<Bullet, Prediction> bulletMap = new HashMap<Bullet, Prediction>();
+	private List<Prediction> processedPredictions = new ArrayList<Prediction>();
+	
 	void sFiring() {
 		if (currentPrediction == null) {
 			state = State.Waiting;
 			return;
 		}
-		modules.getRobot().setFire(currentPrediction.bulletEnegry);
+		Bullet bullet = modules.getRobot().setFireBullet(currentPrediction.bulletEnegry);
+		bulletMap.put(bullet, currentPrediction);
+		currentPrediction = null;
 		state = State.Waiting;
 	}
 
@@ -96,6 +109,51 @@ class SimpleGun implements ISparkyGun {
 		state = State.Waiting;
 	}
 
+	public void onBulletHit(BulletHitEvent event) {
+		Bullet b = event.getBullet();
+		Prediction p = bulletMap.get(b);
+		p.didHit = true;
+		processedPredictions.add(p);
+		bulletMap.remove(b);
+	}
+	
+	public void onBulletHitBullet(BulletHitBulletEvent event) {
+		Bullet b = event.getBullet();
+		bulletMap.remove(b);
+	}
+	
+	public void onBulletMissed(BulletMissedEvent event) {
+		Bullet b = event.getBullet();
+		Prediction p = bulletMap.get(b);
+		p.didHit = false;
+		processedPredictions.add(p);
+		bulletMap.remove(b);
+	}
+
+	public java.util.List<SimpleGun.Prediction> getProcessedPredictions() {
+		return processedPredictions;
+	}
+
+	public boolean saveDataToFile(String fullPath) {
+		try {
+			RobocodeFileOutputStream file = new RobocodeFileOutputStream(fullPath, true);
+			StringBuilder str = new StringBuilder();
+			for (Prediction p : processedPredictions) {
+				str.append(Math.round(p.bulletTime));
+				str.append(',');
+				str.append(p.didHit?1:0);
+				str.append('\n');
+			}
+			byte[] bytes = str.toString().getBytes();
+			file.write(bytes, 0, bytes.length);
+			file.close();
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
 	public void onPaint(java.awt.Graphics2D g) {
 		AdvancedRobot robot = modules.getRobot();
 		g.setColor(java.awt.Color.RED);
@@ -119,7 +177,7 @@ class SimpleGun implements ISparkyGun {
 		double H = robot.getBattleFieldHeight() - h;
 
 		double time = 0;
-		double maxTime = 50;
+		double maxTime = 1000;
 		
 		List<Prediction> predictions = new ArrayList<>();
 		predictions.add(new Prediction(1));
@@ -149,6 +207,7 @@ class SimpleGun implements ISparkyGun {
 				double hitT = rotationT + bulletT;
 				prediction.gunBearing = angle;
 				prediction.time = hitT;
+				prediction.bulletTime = bulletT;
 				if (hitT <= time) {
 					prediction.fire = true;
 				} else {

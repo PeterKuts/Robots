@@ -28,6 +28,11 @@ interface ISparkyScanner extends ISparkyModule {
 }
 
 interface ISparkyGun extends ISparkyModule {
+	void onBulletHit(robocode.BulletHitEvent event);
+	void onBulletHitBullet(robocode.BulletHitBulletEvent event);
+	void onBulletMissed(robocode.BulletMissedEvent event);
+	boolean saveDataToFile(String fullPath);
+	java.util.List<SimpleGun.Prediction> getProcessedPredictions(); 
 }
 
 interface ISparkyDriver extends ISparkyModule {
